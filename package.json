@@ -1,0 +1,9 @@
+{
+  "name": "clipnova-hosted",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ClipNova hosted URL-based video clipping prototype",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "express": "^4.21.2" }
+}

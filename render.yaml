@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: clipnova
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health

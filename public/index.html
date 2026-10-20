@@ -1,0 +1,215 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ClipNova — Browser Preview</title><style>
+:root{color-scheme:dark;--bg:#0b0d13;--panel:#121622;--line:#242a3a;--muted:#98a2b8;--text:#f3f5ff;--purple:#8b5cf6;--cyan:#42d6c5}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0,#24194b 0,transparent 38%),var(--bg);color:var(--text);font:15px Inter,system-ui,Arial}button,input{font:inherit}button{cursor:pointer}.app{display:grid;grid-template-columns:235px 1fr;min-height:100vh}.side{border-right:1px solid var(--line);padding:25px 16px;background:#0d1018}.logo{font-size:23px;font-weight:850;letter-spacing:-1px;padding:8px 10px 28px}.logo span{color:var(--purple)}.nav{display:flex;gap:12px;padding:12px;border-radius:11px;color:var(--muted);margin:4px 0}.nav.active{background:#211b3c;color:white}.tiny{color:var(--muted);font-size:12px}.main{padding:32px;max-width:1500px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.top h1{margin:0;font-size:30px;letter-spacing:-1px}.btn{border:1px solid var(--line);background:#1b2030;color:white;padding:11px 15px;border-radius:10px}.btn.primary{border:0;background:linear-gradient(110deg,#8b5cf6,#6d5dfc);font-weight:700}.welcome{color:var(--muted);margin-top:8px}.hero{margin:26px 0;background:linear-gradient(120deg,#20183b,#141a2a 68%,#102c32);border:1px solid #3a3159;border-radius:20px;padding:28px;display:flex;justify-content:space-between;align-items:center;gap:25px}.hero h2{font-size:25px;margin:0 0 9px}.hero p{color:#c2c8d9;max-width:600px;line-height:1.6}.tag{display:inline-block;background:#2b234a;color:#cbbcff;padding:6px 9px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:14px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}.stat,.card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:18px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:25px;margin-top:9px}.sectionhead{display:flex;justify-content:space-between;align-items:center;margin:28px 0 14px}.sectionhead h3{margin:0;font-size:18px}.workgrid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}.drop{border:1px dashed #6651a8;border-radius:14px;text-align:center;padding:34px 18px;background:#171429}.drop .emoji{font-size:38px}.drop h3{margin:12px 0 6px}.drop p{color:var(--muted);font-size:13px}.field{width:100%;background:#0d111b;border:1px solid var(--line);border-radius:9px;padding:12px;color:white;margin:7px 0 13px}.progress{height:7px;background:#252b3a;border-radius:9px;overflow:hidden;margin-top:12px}.progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--cyan));transition:width .5s}.cliprow{display:flex;align-items:center;gap:13px;padding:13px 0;border-bottom:1px solid var(--line)}.thumb{width:72px;height:50px;border-radius:9px;background:linear-gradient(135deg,#49327a,#24645e);display:grid;place-items:center;font-size:22px}.cliprow b{display:block}.cliprow small{color:var(--muted)}.pill{font-size:11px;padding:5px 8px;border-radius:20px;background:#153c35;color:#74e4c8;margin-left:auto}.notice{color:#9fa8bc;font-size:12px;line-height:1.6;margin-top:20px}.toast{position:fixed;bottom:20px;right:20px;background:#22283a;border:1px solid #454c63;border-radius:12px;padding:14px 18px;display:none;max-width:330px;box-shadow:0 10px 40px #0008}@media(max-width:800px){.app{grid-template-columns:1fr}.side{display:flex;align-items:center;gap:8px;padding:10px;overflow:auto}.logo{padding:8px;margin-right:10px}.nav{white-space:nowrap;padding:9px}.main{padding:20px}.hero{padding:22px}.stats{grid-template-columns:1fr}.workgrid{grid-template-columns:1fr}}
+</style></head><body><div class="app"><aside class="side"><div class="logo">Clip<span>Nova</span></div><div class="nav active">✦ &nbsp; Dashboard</div><div class="nav">▣ &nbsp; My clips</div><div class="nav">✂ &nbsp; Clip editor</div><div class="nav">⚙ &nbsp; Settings</div></aside><main class="main"><div class="top"><div><h1>Good to see you 👋</h1><div class="welcome">Turn long videos into scroll-stopping shorts.</div></div><button class="btn" onclick="toast('This is a browser-only preview. Sign-in is not connected yet.')">Sign in</button></div><section class="hero"><div><div class="tag">YOUR AI CLIP WORKSPACE</div><h2>One video. Dozens of moments.</h2><p>Find the strongest hooks, add captions, and shape your clips for TikTok, Reels and YouTube Shorts.</p><button class="btn primary" onclick="document.getElementById('file').click()">＋ Start with a video</button></div><div style="font-size:76px;filter:drop-shadow(0 10px 25px #0008)">🎬</div></section><div class="stats"><div class="stat"><small>Videos processed</small><strong id="videos">0</strong></div><div class="stat"><small>Clips created</small><strong id="clips">0</strong></div><div class="stat"><small>Minutes saved</small><strong id="minutes">—</strong></div></div><div class="sectionhead"><h3>Create clips</h3><span class="tiny">HOSTED WORKSPACE</span></div><div class="workgrid"><section class="card"><div class="drop"><div class="emoji">🔗</div><h3>Paste a video URL</h3><p>Paste a YouTube video link. The server will prepare a clip for videos you own or are authorized to use. You can also use a direct MP4/WebM URL or local file.</p><input id="videoUrl" class="field" type="url" placeholder="https://www.youtube.com/watch?v=..." aria-label="Video URL"><button class="btn" type="button" onclick="useUrl()">Use video URL</button><div class="tiny" style="margin:8px 0">— or —</div><button class="btn" type="button" onclick="document.getElementById('file').click()">Choose a file instead</button><input id="file" type="file" accept="video/*" hidden></div><div id="playerWrap" class="card" style="margin-top:14px;display:none"><h3 style="margin-top:0">Source video</h3><video id="sourceVideo" controls playsinline style="width:100%;max-height:360px;background:#05060a;border-radius:10px"></video><div class="tiny" id="sourceInfo" style="margin-top:8px">Load a direct MP4/WebM video URL or choose a local file.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px"><label class="tiny">Clip start (seconds)<input class="field" id="clipStart" type="number" min="0" value="0" step="0.5"></label><label class="tiny">Clip end (seconds)<input class="field" id="clipEnd" type="number" min="1" value="15" step="0.5"></label></div><button class="btn primary" id="makeClipBtn" style="width:100%" type="button" onclick="makeClip()">Create a real playable clip</button><p class="tiny" id="clipStatus">YouTube links are processed by the local server into MP4; direct/local videos use browser recording.</p></div><label class="tiny" for="style">Caption style</label><select class="field" id="style"><option>Clean bold captions</option><option>Karaoke highlight</option><option>Minimal subtitles</option><option>Creator pop</option></select><label class="tiny" for="ratio">Output format</label><select class="field" id="ratio"><option>9:16 · Shorts / Reels / TikTok</option><option>1:1 · Square</option><option>16:9 · YouTube</option></select><button class="btn primary" style="width:100%" onclick="processVideo()">✦ Prepare video</button><div class="progress"><span id="bar"></span></div><p id="status" class="tiny">Paste a YouTube link or choose a local video. Set a start/end range and create a watchable clip.</p></section><section class="card"><div class="sectionhead" style="margin-top:0"><h3>Recent clips</h3><button class="btn" onclick="toast('No saved clips yet in this demo.')">View all</button></div><div id="recent"><p class="tiny">Your generated, playable clips will appear here.</p></div><p class="notice">YouTube links are processed on the local server into watchable MP4 clips. You must own or have permission to use the source. Private, restricted, live, or unavailable videos may fail. AI highlight detection is not included yet.</p></section></div><p class="notice">ClipNova hosted workspace · video processing runs on the server.</p></main></div><div id="toast" class="toast"></div><script>
+let chosenFile = null;
+let sourceLabel = '';
+let sourceObjectUrl = null;
+let clipCount = 0;
+let activeRecorders = new Set();
+
+const $ = id => document.getElementById(id);
+function toast(s) {
+  const t = $('toast'); t.textContent = s; t.style.display = 'block';
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => t.style.display = 'none', 3500);
+}
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function setSource(src, label, isLocal=false) {
+  const video = $('sourceVideo');
+  if (sourceObjectUrl && sourceObjectUrl.startsWith('blob:')) URL.revokeObjectURL(sourceObjectUrl);
+  sourceObjectUrl = src;
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
+  video.src = src;
+  $('playerWrap').style.display = 'block';
+  $('sourceInfo').textContent = label + (isLocal ? ' · local file' : ' · direct media URL');
+  $('status').textContent = 'Loading source video…';
+  video.onloadedmetadata = () => {
+    $('status').textContent = `Video ready · ${video.videoWidth}×${video.videoHeight} · ${video.duration.toFixed(1)} seconds`;
+    $('clipStart').max = Math.max(0, video.duration - 0.5);
+    $('clipEnd').max = video.duration;
+    $('clipEnd').value = Math.min(15, Math.floor(video.duration) || 1);
+    $('videos').textContent = '1';
+  };
+  video.onerror = () => {
+    $('status').textContent = 'Could not play this source. Use a direct .mp4/.webm file URL or choose a video file.';
+    $('sourceInfo').textContent = 'Playback failed. Many platform watch-page URLs are not direct video files.';
+    toast('This link cannot be played directly in the browser. Try a direct MP4/WebM URL or select a file.');
+  };
+}
+function isYouTubeUrl(u) {
+  return ['youtube.com','www.youtube.com','m.youtube.com','youtu.be','www.youtube-nocookie.com'].includes(u.hostname.toLowerCase()) &&
+    (/youtube\.com$/.test(u.hostname) ? (/\/watch$/.test(u.pathname) || /\/shorts\//.test(u.pathname) || /\/live\//.test(u.pathname) || /\/embed\//.test(u.pathname)) : true);
+}
+function extractYouTubeId(raw) {
+  try { const u = new URL(raw); if (u.hostname.includes('youtu.be')) return u.pathname.split('/').filter(Boolean)[0]; if (u.pathname === '/watch') return u.searchParams.get('v'); const m=u.pathname.match(/\/(?:shorts|live|embed)\/([^/?]+)/); return m ? m[1] : null; } catch { return null; }
+}
+function useUrl() {
+  const raw = $('videoUrl').value.trim();
+  if (!raw) { toast('Paste a direct video file URL first.'); return; }
+  let u;
+  try { u = new URL(raw); if (!['http:','https:'].includes(u.protocol)) throw new Error(); }
+  catch { toast('Enter a valid http:// or https:// URL.'); return; }
+  if (isYouTubeUrl(u)) {
+    $('status').textContent = 'YouTube link recognized. Use “Create a real playable clip” to process it on the ClipNova server.';
+    $('sourceInfo').textContent = 'YouTube source · server processing required';
+    $('playerWrap').style.display = 'block';
+    $('sourceVideo').removeAttribute('src');
+    $('sourceVideo').style.display = 'none';
+    let ytFrame = $('youtubeEmbed');
+    if (!ytFrame) { ytFrame = document.createElement('iframe'); ytFrame.id = 'youtubeEmbed'; ytFrame.title = 'YouTube source video'; ytFrame.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'; ytFrame.allowFullscreen = true; ytFrame.style.cssText = 'width:100%;height:360px;border:0;border-radius:10px;background:#05060a;margin-bottom:10px'; $('sourceVideo').parentNode.insertBefore(ytFrame, $('sourceVideo')); }
+    const ytId = extractYouTubeId(raw);
+    if (!ytId) { toast('Could not read a YouTube video ID from that link.'); return; }
+    ytFrame.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(ytId);
+    ytFrame.style.display = 'block';
+    chosenFile = null;
+    sourceLabel = 'YouTube video';
+    $('clipStart').value = 0; $('clipEnd').value = 30;
+    $('clipEnd').max = 600;
+    $('videos').textContent = '1';
+    toast('YouTube link recognized. Set the clip times, then create your clip.');
+    return;
+  }
+  if (!/\.(mp4|webm|ogg|m4v|mov)(?:$|[?#])/i.test(u.href)) {
+    toast('Use a YouTube watch/shorts link or a direct MP4/WebM URL.'); return;
+  }
+  chosenFile = null;
+  sourceLabel = u.hostname + u.pathname.split('/').pop();
+  setSource(u.href, sourceLabel);
+}
+$('file').addEventListener('change', e => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('video/')) { toast('Choose a video file.'); return; }
+  chosenFile = file;
+  $('videoUrl').value = '';
+  sourceLabel = file.name;
+  const url = URL.createObjectURL(file);
+  setSource(url, file.name, true);
+});
+function processVideo() {
+  if (!$('sourceVideo').src || $('playerWrap').style.display === 'none') {
+    const raw = $('videoUrl').value.trim();
+    if (raw) { useUrl(); return; }
+    $('file').click(); return;
+  }
+  $('sourceVideo').play().then(() => $('sourceVideo').pause()).catch(()=>{});
+  toast('Source loaded. Set start/end times and create a playable clip.');
+}
+function addClipCard(blob, start, end, filename) {
+  const url = URL.createObjectURL(blob);
+  clipCount++;
+  const id = 'clip-' + clipCount;
+  const item = document.createElement('div');
+  item.className = 'card';
+  item.style.margin = '12px 0';
+  item.innerHTML = `<div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap"><div><b>${escapeHtml(filename)}</b><div class="tiny">${start.toFixed(1)}s–${end.toFixed(1)}s · ${(blob.size/1024/1024).toFixed(2)} MB · WebM</div></div><span class="pill">Ready</span></div><video controls playsinline style="width:100%;max-height:260px;background:#05060a;border-radius:10px;margin-top:10px" src="${url}"></video><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><a class="btn primary" href="${url}" download="${escapeHtml(filename)}" style="text-decoration:none">Download clip</a><button class="btn" type="button" id="${id}-revoke">Remove</button></div>`;
+  $('recent').prepend(item);
+  item.querySelector('#' + id + '-revoke').addEventListener('click', () => {
+    item.querySelector('video').pause(); URL.revokeObjectURL(url); item.remove();
+    $('clips').textContent = String(Math.max(0, Number($('clips').textContent)-1));
+  });
+  $('clips').textContent = String(Number($('clips').textContent || 0) + 1);
+  return url;
+}
+async function makeClip() {
+  const rawUrl = $('videoUrl').value.trim();
+  let parsedUrl = null;
+  try { parsedUrl = new URL(rawUrl); } catch {}
+  if (parsedUrl && isYouTubeUrl(parsedUrl)) {
+    const start = Number($('clipStart').value);
+    const end = Number($('clipEnd').value);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end <= start || end - start > 180) {
+      toast('Choose a valid range up to 180 seconds long.'); return;
+    }
+    const button = $('makeClipBtn');
+    button.disabled = true; button.textContent = 'Generating MP4 clip…';
+    $('clipStatus').textContent = 'The server is processing your selected YouTube segment. Keep this tab open.';
+    try {
+      const response = await fetch('/api/clips', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({url: rawUrl, start, end}) });
+      const data = await response.json();
+      if (!response.ok || !data.ok) throw new Error(data.error || 'Clip generation failed.');
+      const clipUrl = data.clipUrl;
+      clipCount++;
+      const item = document.createElement('div'); item.className = 'card'; item.style.margin = '12px 0';
+      const safeName = escapeHtml(data.filename || `clipnova-${clipCount}.mp4`);
+      item.innerHTML = `<div style="display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap"><div><b>${safeName}</b><div class="tiny">${start.toFixed(1)}s–${end.toFixed(1)}s · ${(data.sizeBytes/1024/1024).toFixed(2)} MB · MP4</div></div><span class="pill">Ready</span></div><video controls playsinline style="width:100%;max-height:260px;background:#05060a;border-radius:10px;margin-top:10px" src="${clipUrl}"></video><div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap"><a class="btn primary" href="${clipUrl}" download="${safeName}" style="text-decoration:none">Download clip</a></div>`;
+      $('recent').prepend(item); $('clips').textContent = String(Number($('clips').textContent || 0) + 1);
+      $('clipStatus').textContent = 'Clip created! Watch it below or download the MP4.';
+      $('status').textContent = 'YouTube clip created successfully.';
+      toast('Your YouTube clip is ready to watch and download.');
+    } catch (err) {
+      $('clipStatus').textContent = err.message || 'Server clip processing failed.';
+      toast((err.message || 'Server clip processing failed.') + ' Make sure ClipNova is running with Docker.');
+    } finally { button.disabled = false; button.textContent = 'Create a real playable clip'; }
+    return;
+  }
+  const video = $('sourceVideo');
+  if (!video.src || !$('playerWrap').style.display || !Number.isFinite(video.duration)) {
+    toast('Load a playable video first.'); return;
+  }
+  if (!window.MediaRecorder || !video.captureStream) {
+    toast('Your browser does not support in-browser recording. Try the latest Chrome desktop.'); return;
+  }
+  const start = Number($('clipStart').value);
+  const end = Number($('clipEnd').value);
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end <= start || end > video.duration + 0.1) {
+    toast(`Choose a valid range between 0 and ${video.duration.toFixed(1)} seconds.`); return;
+  }
+  const button = $('makeClipBtn');
+  button.disabled = true; button.textContent = 'Recording clip…';
+  $('clipStatus').textContent = 'Recording the selected segment in real time. Do not close or switch away from this tab.';
+  let stream, recorder, chunks = [];
+  try {
+    video.pause();
+    if (Math.abs(video.currentTime - start) > 0.05) {
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error('Seeking timed out')), 10000);
+        video.addEventListener('seeked', () => { clearTimeout(timeout); resolve(); }, {once:true});
+        video.currentTime = start;
+      });
+    }
+    stream = video.captureStream();
+    const mime = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm'].find(t => MediaRecorder.isTypeSupported(t));
+    recorder = new MediaRecorder(stream, mime ? {mimeType:mime} : undefined);
+    activeRecorders.add(recorder);
+    recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    const finished = new Promise((resolve, reject) => {
+      recorder.onstop = () => resolve();
+      recorder.onerror = () => reject(new Error('Recording failed. This host may block recording.'));
+    });
+    recorder.start(250);
+    await video.play();
+    await new Promise((resolve, reject) => {
+      const tick = () => {
+        if (video.currentTime >= end || video.ended) { video.pause(); resolve(); }
+        else if (video.error) reject(new Error('Video playback failed during recording.'));
+        else requestAnimationFrame(tick);
+      };
+      tick();
+    });
+    recorder.stop();
+    await finished;
+    activeRecorders.delete(recorder);
+    stream.getTracks().forEach(t => t.stop());
+    const blob = new Blob(chunks, {type: recorder.mimeType || 'video/webm'});
+    if (!blob.size) throw new Error('The browser produced an empty clip. The source may block recording.');
+    const name = `clipnova-clip-${String(clipCount+1).padStart(2,'0')}.webm`;
+    addClipCard(blob, start, Math.min(end, video.duration), name);
+    $('minutes').textContent = '—';
+    $('clipStatus').textContent = 'Clip created! Play it here or download the WebM file.';
+    $('status').textContent = 'Clip successfully created and ready to watch.';
+    toast('Your clip is ready to watch and download.');
+  } catch (err) {
+    try { if (recorder && recorder.state !== 'inactive') recorder.stop(); } catch {}
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    $('clipStatus').textContent = err.message || 'Could not record this source.';
+    toast((err.message || 'Could not record this source.') + ' Try a local file or another direct media host.');
+  } finally {
+    button.disabled = false; button.textContent = 'Create a real playable clip';
+  }
+}
+</script></body></html>
