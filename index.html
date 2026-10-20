@@ -22,7 +22,7 @@ footer{text-align:center;color:#727783;font-size:12px;margin-top:28px}
 <body>
 <header><div class="brand"><div class="logo">▶</div>ClipNova</div><div class="tag">AI SHORTS STUDIO</div></header>
 <main>
-<section class="hero"><div class="eyebrow">From long video to scroll-stopping shorts</div><h1>Your best moments.<br><span>Found automatically.</span></h1><p>ClipNova analyzes spoken content, ranks engaging moments, creates vertical clips, and writes captions so you can focus on posting.</p></section>
+<section class="hero"><div class="eyebrow">From long video to scroll-stopping shorts</div><h1>Your best moments.<br><span>Found automatically.</span></h1><p>ClipNova uses free subtitle and media-signal analysis to find candidate moments, create vertical clips, and draft captions so you can focus on posting.</p></section>
 <div class="workspace">
 <section class="panel">
 <h2>Start a clipping job</h2><p class="sub">Paste a supported YouTube link or upload a video file you own or are authorized to process.</p>
@@ -30,7 +30,7 @@ footer{text-align:center;color:#727783;font-size:12px;margin-top:28px}
 <form id="urlForm"><label for="videoUrl">YouTube video link</label><input id="videoUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." required><button class="btn" type="submit">✦ Find my best moments</button></form>
 <form id="uploadForm" hidden><label for="videoFile">Choose video (MP4, MOV, MKV, WebM — max 300 MB)</label><input id="videoFile" type="file" accept="video/*,.mkv,.webm" required><button class="btn" type="submit">✦ Analyze & create clips</button></form>
 <div class="features"><div class="feature"><div class="emoji">🧠</div><strong>AI moment ranking</strong><span>Find hooks, stories, tips and payoffs.</span></div><div class="feature"><div class="emoji">📱</div><strong>Vertical clips</strong><span>9:16 MP4s ready to review.</span></div><div class="feature"><div class="emoji">💬</div><strong>Post captions</strong><span>Hooks, captions and hashtags.</span></div><div class="feature"><div class="emoji">⬇️</div><strong>Preview & download</strong><span>Keep the clips you like.</span></div></div>
-<p class="hint">AI processing requires an OpenAI API key configured by the site owner. API charges and free-tier limits may apply.</p>
+<p class="hint">No paid AI API key required. Uses available YouTube subtitles when possible, otherwise estimates highlights from audio and scene changes. Free hosting limits apply.</p>
 </section>
 <section class="panel right"><h2>Your clips</h2><p class="sub">Your results will appear here when processing finishes.</p><div id="results" class="empty"><div class="big">✂️</div><strong>No clips yet</strong><span>Submit a video to start finding highlights.</span></div></section>
 </div>

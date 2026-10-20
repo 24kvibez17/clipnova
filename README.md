@@ -1,35 +1,23 @@
-# ClipNova Auto Highlights v2
+# ClipNova Free Online v3
 
-This version replaces manual start/end controls with an automated pipeline:
-1. Accept a YouTube URL or a user-provided video file.
-2. Extract audio with FFmpeg.
-3. Transcribe audio using OpenAI's audio transcription API.
-4. Ask an AI model to rank moments from transcript content and timestamps.
-5. Cut selected moments with FFmpeg, format vertical 9:16, and generate post captions.
+This build removes the OpenAI API dependency and does not require a paid AI key.
 
-## Important requirements and limitations
-- **Requires an OpenAI API key** set as `OPENAI_API_KEY` in Render. API usage is not guaranteed to be free; check current pricing and usage limits before using it.
-- YouTube extraction via yt-dlp is best-effort and may fail due to YouTube restrictions, video permissions, age/region limits, or changes to YouTube. Only process videos you own or are authorized to process.
-- A transcript can help identify interesting dialogue, but it cannot reliably judge visual excitement without a vision-analysis stage. This implementation ranks transcript moments using AI.
-- Render free services have limited RAM, CPU, request duration, and ephemeral disk. Long videos can fail or take a long time, and generated clips may disappear on restart/redeploy. Use short test videos first.
-- This is a deployable starter, not a guarantee of production reliability. No external service can promise that every URL works.
-- For large files or public production, use persistent object storage and a background job worker.
+## How free analysis works
+- YouTube URL jobs try to fetch English captions/subtitles when available and rank transcript windows using transparent heuristics (hook words, questions, emphasis, and transcript density).
+- If subtitles are unavailable, the server scores candidate windows using audio loudness and visual scene changes. Uploaded videos use this fallback.
+- FFmpeg renders actual vertical MP4 clips. Captions/hooks/hashtags are generated with simple templates and transcript text, not a generative AI model.
 
-## Deploy to your existing Render service
-1. Back up your current GitHub repository first.
-2. Upload/replace the files in this project in the root of `24kvibez17/clipnova` (keep the repository name).
-3. In Render → your `clipnova` service → Environment, add `OPENAI_API_KEY` with your key. Never put the key in GitHub or frontend code.
-4. Trigger **Manual Deploy → Clear build cache & deploy** (or the closest available clean-build option).
-5. Open `/api/health` on your Render URL to verify the service is running.
-6. Upload a short video you own first, or try a public YouTube URL you are authorized to process.
+This is a free, heuristic highlight finder—not a semantic AI model. It can miss context, humor, or the truly best moment. Subtitles depend on source availability. YouTube extraction may fail because of platform restrictions or changes. Only process videos you own or have permission to use.
 
-## Local development
-Requires Docker, or Node 20 + FFmpeg + yt-dlp + Deno installed. Set `OPENAI_API_KEY` in the environment and run `npm start`.
+## Deploy to the existing Render service
+1. Back up your GitHub repository before replacing files.
+2. Upload the files in this ZIP to the root of your existing `clipnova` repository. Keep the same repository name.
+3. Commit the changes and let Render redeploy. No `OPENAI_API_KEY` environment variable is needed. You can remove that variable from Render if it exists.
+4. Check `https://YOUR-SERVICE.onrender.com/api/health` and verify `ok: true`.
+5. Test with a short video you are authorized to process.
 
-## Endpoints
-- `GET /api/health`
-- `POST /api/jobs` JSON `{ "url": "https://www.youtube.com/watch?v=..." }`
-- `POST /api/upload` multipart field `video`
-- `GET /api/jobs/:id`
-- `GET /api/jobs/:id/clips`
-- `GET /clips/:filename`
+## Free hosting caveats
+Render free services sleep when idle, have limited compute and ephemeral disk, and may restart. Jobs and generated clips can disappear on restart/redeploy; long videos can time out or exhaust memory/disk. This package cannot guarantee unlimited or always-on processing on free hosting.
+
+## Local smoke test
+Requires Node.js, FFmpeg/ffprobe, yt-dlp, and Deno (for supported YouTube extraction). Run `npm install`, then `npm start`; open `http://localhost:4173`.

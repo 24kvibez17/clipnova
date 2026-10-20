@@ -45,80 +45,53 @@ function run(cmd, args, timeoutMs = 20 * 60 * 1000) {
     });
   });
 }
-async function openAI(pathname, body, isForm = false) {
-  if (!process.env.OPENAI_API_KEY) throw new Error('AI is not configured yet. Add OPENAI_API_KEY in Render → Environment.');
-  const headers = { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` };
-  let bodyOut = body;
-  if (!isForm) { headers['Content-Type'] = 'application/json'; bodyOut = JSON.stringify(body); }
-  const response = await fetch(`https://api.openai.com/v1${pathname}`, { method: 'POST', headers, body: bodyOut });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error?.message || `AI request failed (${response.status}). Check API key and account limits.`);
-  return data;
-}
-async function transcribe(audioPath) {
-  const stat = fs.statSync(audioPath);
-  if (stat.size > 24 * 1024 * 1024) {
-    // Re-encode mono 16 kHz audio at a low bitrate so long videos can fit common upload limits.
-    const compressed = audioPath + '.mp3';
-    await run('ffmpeg', ['-y', '-i', audioPath, '-vn', '-ac', '1', '-ar', '16000', '-b:a', '48k', compressed]);
-    audioPath = compressed;
+function parseVtt(vttPath, duration) {
+  if (!vttPath || !fs.existsSync(vttPath)) return [];
+  const raw = fs.readFileSync(vttPath, 'utf8').replace(/\r/g, '');
+  const cues = [];
+  const time = x => { const a=x.trim().split(':').map(Number); return a.length===3 ? a[0]*3600+a[1]*60+a[2] : a[0]*60+a[1]; };
+  for (const block of raw.split(/\n\s*\n/)) {
+    const m = block.match(/(\d{1,2}:\d{2}(?::\d{2})?[.,]\d{3})\s+-->\s+(\d{1,2}:\d{2}(?::\d{2})?[.,]\d{3})/);
+    if (!m) continue;
+    const cleanTime = x => time(x.replace(',', '.').replace(/\.\d+$/, '')) + Number('0.' + (x.match(/[.,](\d+)$/)?.[1] || '0'));
+    const text = block.slice(block.indexOf(m[0]) + m[0].length).replace(/<[^>]*>/g, ' ').replace(/&amp;/g,'&').replace(/&#39;|&apos;/g,"'").replace(/&quot;/g,'"').replace(/\[[^\]]*\]|\([^)]*\)/g,' ').replace(/\s+/g,' ').trim();
+    const a=cleanTime(m[1]), b=cleanTime(m[2]);
+    if (text && b>a && a<duration) cues.push({start:a,end:Math.min(b,duration),text});
   }
-  const form = new FormData();
-  form.append('file', new Blob([fs.readFileSync(audioPath)]), path.basename(audioPath));
-  form.append('model', 'gpt-4o-mini-transcribe');
-  form.append('response_format', 'verbose_json');
-  form.append('timestamp_granularities[]', 'segment');
-  const result = await openAI('/audio/transcriptions', form, true);
-  try { if (audioPath.endsWith('.mp3') && audioPath !== audioPath) fs.unlinkSync(audioPath); } catch {}
-  const segments = (result.segments || []).map(s => ({
-    start: Number(s.start), end: Number(s.end), text: String(s.text || '').trim()
-  })).filter(s => s.end > s.start && s.text);
-  if (!segments.length && result.text) return [{ start: 0, end: 999999, text: result.text }];
-  return segments;
+  return cues;
 }
-function transcriptWindow(segments, duration, count = 24) {
-  const max = Math.max(1, duration);
-  const windowSize = Math.max(15, Math.min(45, max / count));
-  const out = [];
-  for (let start = 0; start < max; start += windowSize) {
-    const end = Math.min(max, start + windowSize);
-    const text = segments.filter(s => s.end > start && s.start < end).map(s => s.text).join(' ').trim();
-    if (text.length >= 25) out.push({ start: Math.max(0, start - 2), end: Math.min(max, end + 2), transcript: text.slice(0, 2400) });
+function transcriptHighlights(segments, duration) {
+  const windows=[]; const size=Math.min(45,Math.max(20,duration/Math.max(1,Math.ceil(duration/35))));
+  const hookWords = /\b(because|secret|mistake|never|always|surprising|imagine|why|how|best|worst|important|actually|but|however|finally|revealed|learn|tip|trick|fail|win|won|lost|crazy|insane|incredible|amazing|problem|solution|remember|truth|wrong|right|first|last|breakthrough|love|hate|fear|shocked|turns out|the reason)\b/ig;
+  for(let a=0;a<duration;a+=size){const b=Math.min(duration,a+size);const text=segments.filter(x=>x.end>a&&x.start<b).map(x=>x.text).join(' ').trim();if(text.length<35)continue;
+    const words=text.split(/\s+/).length, hooks=(text.match(hookWords)||[]).length, questions=(text.match(/[?]/g)||[]).length, emphatic=(text.match(/[!]/g)||[]).length;
+    const score=Math.min(99,Math.round(38+Math.min(24,words/5)+hooks*4+questions*3+emphatic*2));
+    const clean=text.replace(/\s+/g,' '); const hook=clean.split(/[.!?]/)[0].slice(0,100) || 'A moment worth watching';
+    windows.push({start:Math.max(0,a-2),end:Math.min(duration,b+2),score,reason:'Ranked using transcript hooks, questions and emphasis',hook,caption:hook,hashtags:['#shorts','#clips','#highlights']});
   }
-  return out;
+  windows.sort((a,b)=>b.score-a.score); const picked=[];
+  for(const h of windows){if(picked.every(x=>h.end<=x.start||h.start>=x.end))picked.push(h);if(picked.length===5)break;}
+  return picked.sort((a,b)=>a.start-b.start);
 }
-async function chooseHighlights(segments, duration) {
-  const windows = transcriptWindow(segments, duration);
-  if (!windows.length) throw new Error('No usable speech transcript was found. This starter currently scores spoken content; silent or music-only videos need a different analysis method.');
-  const prompt = `You are an editor selecting engaging short-form video moments from a transcript. Rank moments for a general social audience using clear hooks, surprising claims, useful tips, humor, emotional payoff, strong opinions, story turns, or self-contained ideas. Avoid intros, dead air, repetitive content, and moments that need lots of missing context. Only select ranges within the supplied windows. Return JSON only: {"highlights":[{"start":number,"end":number,"score":1-100,"reason":"short reason","hook":"short opening hook","caption":"social post caption","hashtags":["#tag"]}]}. Select up to 5 non-overlapping highlights, ideally 20-55 seconds each, never over 60 seconds. Make captions factual and don't invent claims.`;
-  const result = await openAI('/chat/completions', {
-    model: 'gpt-4o-mini',
-    temperature: 0.2,
-    response_format: { type: 'json_object' },
-    messages: [
-      { role: 'system', content: prompt },
-      { role: 'user', content: JSON.stringify({ duration_seconds: duration, transcript_windows: windows }) }
-    ]
-  });
-  const raw = result.choices?.[0]?.message?.content || '{}';
-  let parsed;
-  try { parsed = JSON.parse(raw); } catch { throw new Error('AI returned an unreadable highlight list. Try again.'); }
-  const highlights = (parsed.highlights || []).map(h => ({
-    start: Math.max(0, Number(h.start)), end: Math.min(duration, Number(h.end)),
-    score: Math.max(1, Math.min(100, Number(h.score) || 50)),
-    reason: String(h.reason || 'Selected from transcript'),
-    hook: String(h.hook || 'Watch this moment'),
-    caption: String(h.caption || h.hook || 'Watch this moment'),
-    hashtags: Array.isArray(h.hashtags) ? h.hashtags.map(String).slice(0, 8) : []
-  })).filter(h => Number.isFinite(h.start) && Number.isFinite(h.end) && h.end > h.start && h.end - h.start >= 8);
-  highlights.sort((a,b) => b.score - a.score);
-  const selected = [];
-  for (const h of highlights) {
-    if (selected.every(x => h.end <= x.start || h.start >= x.end)) selected.push(h);
-    if (selected.length >= 5) break;
+async function audioVisualFallback(sourcePath, duration) {
+  const size=Math.min(45,Math.max(20,duration/Math.max(1,Math.ceil(duration/35))));
+  const scenes=[];
+  try {
+    const { stdout } = await new Promise((resolve,reject)=>{
+      const child=spawn('ffmpeg',['-hide_banner','-i',sourcePath,'-vf',"select='gt(scene,0.28)',showinfo",'-an','-f','null','-'],{stdio:['ignore','pipe','pipe']});
+      let out='',err='';child.stdout.on('data',d=>out+=d);child.stderr.on('data',d=>err=(err+d).slice(-20000));child.on('error',reject);child.on('close',()=>resolve({stdout:err}));
+    });
+    for(const m of stdout.matchAll(/pts_time:([\d.]+)/g))scenes.push(Number(m[1]));
+  } catch {}
+  const windows=[];
+  for(let a=0;a<duration;a+=size){const b=Math.min(duration,a+size); if(b-a<8)continue;
+    const cuts=scenes.filter(t=>t>=a&&t<b).length;
+    let mean=-60;
+    try { const {out}=await new Promise((resolve,reject)=>{const c=spawn('ffmpeg',['-hide_banner','-ss',String(a),'-t',String(b-a),'-i',sourcePath,'-vn','-af','volumedetect','-f','null','-'],{stdio:['ignore','ignore','pipe']});let e='';c.stderr.on('data',d=>e=(e+d).slice(-5000));c.on('error',reject);c.on('close',()=>resolve({out:e}));}); const m=out.match(/mean_volume:\s*(-?[\d.]+) dB/);if(m)mean=Number(m[1]); } catch {}
+    const loud=Math.max(0,Math.min(1,(mean+50)/42)); const cutScore=Math.min(1,cuts/12);const score=Math.round(35+loud*35+cutScore*25);
+    windows.push({start:Math.max(0,a-1),end:Math.min(duration,b+1),score,reason:'Estimated from audio level and visual scene changes; no transcript was available',hook:'Highlight from your video',caption:'A highlight from this video. Add context before posting.',hashtags:['#shorts','#highlights','#clips']});
   }
-  if (!selected.length) throw new Error('AI could not find suitable clips in this transcript. Try a longer video with clear speech.');
-  return selected.sort((a,b) => a.start - b.start);
+  windows.sort((a,b)=>b.score-a.score);const picked=[];for(const h of windows){if(picked.every(x=>h.end<=x.start||h.start>=x.end))picked.push(h);if(picked.length>=Math.min(5,windows.length))break;}return picked.sort((a,b)=>a.start-b.start);
 }
 async function processVideo(job, sourcePath) {
   try {
@@ -131,13 +104,17 @@ async function processVideo(job, sourcePath) {
     });
     if (probe > 2 * 60 * 60) throw new Error('Videos over 2 hours are not supported in this starter. Try a shorter source.');
     const duration = probe;
-    const audio = path.join(JOBS, `${job.id}.mp3`);
-    job.progress = 20; job.message = 'Transcribing speech for highlight detection…';
-    await run('ffmpeg', ['-y','-i',sourcePath,'-vn','-ac','1','-ar','16000','-b:a','64k',audio]);
-    const segments = await transcribe(audio);
-    try { fs.unlinkSync(audio); } catch {}
-    job.progress = 48; job.message = 'AI is ranking the most engaging moments…';
-    const highlights = await chooseHighlights(segments, duration);
+    job.progress = 25; job.message = 'Finding engaging moments using free transcript and media analysis…';
+    const segments = parseVtt(job.subtitlePath, duration);
+    let highlights = transcriptHighlights(segments, duration);
+    if (!highlights.length) {
+      job.message = 'No usable subtitles found. Scoring audio levels and visual scene changes…';
+      highlights = await audioVisualFallback(sourcePath, duration);
+    }
+    if (!highlights.length) throw new Error('Could not identify candidate moments in this video. Try a shorter video with clearer audio or subtitles.');
+    job.analysisMethod = segments.length ? 'free subtitle transcript scoring' : 'audio and visual activity scoring';
+    if (job.subtitlePath) { try { fs.unlinkSync(job.subtitlePath); } catch {} }
+    job.progress = 48; job.message = 'Ranking candidate moments and preparing vertical clips…';
     job.progress = 62; job.message = `Creating ${highlights.length} vertical clips…`;
     const clips = [];
     for (let i = 0; i < highlights.length; i++) {
@@ -162,19 +139,20 @@ async function processVideo(job, sourcePath) {
     job.status = 'failed'; job.error = e.message || 'Processing failed.'; job.message = 'We could not finish this video.';
   } finally {
     try { fs.unlinkSync(sourcePath); } catch {}
+    if (job.subtitlePath) { try { fs.unlinkSync(job.subtitlePath); } catch {} }
   }
 }
-async function startJob(sourcePath, originalName, sourceType) {
+async function startJob(sourcePath, originalName, sourceType, subtitlePath = null) {
   const id = crypto.randomBytes(8).toString('hex');
-  const job = { id, status: 'queued', progress: 2, message: 'Job queued…', clips: [], createdAt: Date.now(), originalName, sourceType };
+  const job = { id, status: 'queued', progress: 2, message: 'Job queued…', clips: [], createdAt: Date.now(), originalName, sourceType, subtitlePath };
   jobs.set(id, job);
   setImmediate(() => processVideo(job, sourcePath));
   return job;
 }
 app.get('/api/health', (_req, res) => res.json({
   ok: true, service: 'ClipNova Auto Highlights',
-  aiConfigured: Boolean(process.env.OPENAI_API_KEY),
-  note: 'Automatic transcript-based highlight selection; source access and API usage limits apply.'
+  aiConfigured: true,
+  note: 'No paid AI API key required. Uses available subtitles when present; otherwise scores audio and visual activity. Free-host limits apply.'
 }));
 app.post('/api/jobs', async (req, res) => {
   const url = String(req.body?.url || '').trim();
@@ -184,11 +162,18 @@ app.post('/api/jobs', async (req, res) => {
   if (!['http:','https:'].includes(parsed.protocol) || !hosts.includes(parsed.hostname.toLowerCase())) return res.status(400).json({ error: 'Only YouTube URLs are accepted here.' });
   const id = crypto.randomBytes(8).toString('hex');
   const target = path.join(JOBS, `${id}.%(ext)s`);
+  let subtitlePath = null;
   try {
+    // Subtitle download is best-effort; videos without captions use media-signal fallback.
+    try {
+      await run('yt-dlp', ['--no-playlist','--no-warnings','--js-runtimes','deno','--remote-components','ejs:npm','--write-auto-subs','--write-subs','--sub-langs','en.*,en','--sub-format','vtt','--skip-download','-o',target,url], 90*1000);
+    } catch {}
+    const sub = fs.readdirSync(JOBS).find(n => n.startsWith(id + '.') && /\.vtt$/i.test(n));
+    if (sub) subtitlePath = path.join(JOBS, sub);
     await run('yt-dlp', ['--no-playlist','--no-warnings','--js-runtimes','deno','--remote-components','ejs:npm','-f','bv*+ba/b','--merge-output-format','mp4','-o',target,url], 8*60*1000);
-    const found = fs.readdirSync(JOBS).find(n => n.startsWith(id + '.') && !n.endsWith('.part') && !n.endsWith('.mp3'));
+    const found = fs.readdirSync(JOBS).find(n => n.startsWith(id + '.') && !n.endsWith('.part') && !n.endsWith('.mp3') && !n.endsWith('.vtt'));
     if (!found) throw new Error('yt-dlp finished but no video file was found.');
-    const job = await startJob(path.join(JOBS, found), found, 'youtube');
+    const job = await startJob(path.join(JOBS, found), found, 'youtube', subtitlePath);
     res.status(202).json(publicJob(job));
   } catch (e) {
     for (const n of fs.readdirSync(JOBS).filter(n => n.startsWith(id + '.'))) { try { fs.unlinkSync(path.join(JOBS, n)); } catch {} }
