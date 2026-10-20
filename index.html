@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ClipNova — AI Shorts Studio</title>
+<style>
+:root{color-scheme:dark;--bg:#0e0f12;--panel:#17191e;--line:#2a2d35;--muted:#9ca3af;--red:#ff3838;--white:#f6f7fb;--green:#52d49a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(900px 400px at 80% -10%,#3a151c 0%,transparent 60%),var(--bg);font:15px/1.5 Inter,system-ui,Segoe UI,sans-serif;color:var(--white)}
+header{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(20px,calc((100vw - 1120px)/2));position:sticky;top:0;background:#0e0f12ed;backdrop-filter:blur(14px);z-index:2}
+.brand{display:flex;align-items:center;gap:10px;font-weight:850;font-size:20px;letter-spacing:-.5px}.logo{width:34px;height:34px;border-radius:10px;background:var(--red);display:grid;place-items:center;color:white;font-weight:900}.tag{border:1px solid var(--line);padding:5px 10px;border-radius:999px;color:#c8cbd3;font-size:12px}
+main{max-width:1120px;margin:0 auto;padding:48px 20px 70px}.hero{text-align:center;max-width:760px;margin:0 auto 34px}.eyebrow{color:#ff7777;text-transform:uppercase;letter-spacing:2px;font-size:12px;font-weight:800}.hero h1{font-size:clamp(34px,6vw,58px);line-height:1.05;letter-spacing:-2px;margin:14px 0}.hero h1 span{color:var(--red)}.hero p{color:var(--muted);font-size:17px;margin:0 auto;max-width:640px}
+.workspace{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:start}.panel{background:linear-gradient(145deg,#1a1c22,#141519);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 20px 70px #0002}.panel h2{font-size:17px;margin:0 0 5px}.sub{font-size:13px;color:var(--muted);margin:0 0 20px}
+.tabs{display:flex;background:#0e0f12;border:1px solid var(--line);border-radius:12px;padding:4px;margin-bottom:16px}.tabs button{flex:1;background:transparent;color:#b7bbc5;border:0;padding:10px;border-radius:9px;cursor:pointer;font-weight:700}.tabs button.active{background:#292c34;color:white}
+label{display:block;font-size:13px;color:#d7d9df;margin:14px 0 8px}input[type=url],input[type=file]{width:100%;background:#0e0f12;color:white;border:1px solid #343741;border-radius:12px;padding:13px;font:inherit}input[type=file]{padding:11px}
+.btn{width:100%;border:0;border-radius:12px;background:var(--red);color:white;padding:14px 16px;font:inherit;font-weight:800;cursor:pointer;margin-top:14px;transition:.15s}.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}.btn:disabled{opacity:.5;cursor:wait;transform:none}.hint{font-size:12px;color:var(--muted);margin:10px 0 0}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.feature{border:1px solid var(--line);background:#111216;border-radius:13px;padding:13px}.feature strong{display:block;font-size:13px;margin:7px 0 2px}.feature span{color:var(--muted);font-size:12px}.emoji{font-size:20px}
+.right{min-height:380px}.empty{min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted);padding:20px}.empty .big{font-size:42px;margin-bottom:10px}.status{border:1px solid var(--line);border-radius:13px;background:#101115;padding:13px;margin:12px 0}.statusline{display:flex;justify-content:space-between;gap:12px;font-size:13px}.bar{height:6px;border-radius:9px;background:#30333b;overflow:hidden;margin-top:10px}.bar div{height:100%;background:var(--red);width:0;transition:width .3s}.error{color:#ff9292;white-space:pre-wrap;font-size:13px}.clips{display:grid;gap:12px}.clip{display:grid;grid-template-columns:100px 1fr;gap:13px;padding:12px;border:1px solid var(--line);border-radius:14px;background:#111216}.thumb{aspect-ratio:9/16;border-radius:9px;background:linear-gradient(145deg,#431b22,#20222a);display:grid;place-items:center;font-size:24px}.clip h3{margin:0 0 3px;font-size:14px}.clip p{margin:0 0 7px;font-size:12px;color:var(--muted)}.clip .meta{font-size:11px;color:#ff9a9a}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions a,.actions button{border:1px solid #3a3d46;border-radius:8px;background:#202229;color:white;text-decoration:none;padding:7px 10px;font-size:12px;cursor:pointer}.caption{margin-top:9px;background:#1b1d23;border-radius:8px;padding:9px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}
+footer{text-align:center;color:#727783;font-size:12px;margin-top:28px}
+@media(max-width:800px){.workspace{grid-template-columns:1fr}.hero{text-align:left}.hero p{margin:0}.right{min-height:260px}header{padding:0 18px}main{padding-top:32px}.panel{padding:17px}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">▶</div>ClipNova</div><div class="tag">AI SHORTS STUDIO</div></header>
+<main>
+<section class="hero"><div class="eyebrow">From long video to scroll-stopping shorts</div><h1>Your best moments.<br><span>Found automatically.</span></h1><p>ClipNova analyzes spoken content, ranks engaging moments, creates vertical clips, and writes captions so you can focus on posting.</p></section>
+<div class="workspace">
+<section class="panel">
+<h2>Start a clipping job</h2><p class="sub">Paste a supported YouTube link or upload a video file you own or are authorized to process.</p>
+<div class="tabs"><button id="urlTab" class="active" type="button">YouTube URL</button><button id="uploadTab" type="button">Upload video</button></div>
+<form id="urlForm"><label for="videoUrl">YouTube video link</label><input id="videoUrl" type="url" placeholder="https://www.youtube.com/watch?v=..." required><button class="btn" type="submit">✦ Find my best moments</button></form>
+<form id="uploadForm" hidden><label for="videoFile">Choose video (MP4, MOV, MKV, WebM — max 300 MB)</label><input id="videoFile" type="file" accept="video/*,.mkv,.webm" required><button class="btn" type="submit">✦ Analyze & create clips</button></form>
+<div class="features"><div class="feature"><div class="emoji">🧠</div><strong>AI moment ranking</strong><span>Find hooks, stories, tips and payoffs.</span></div><div class="feature"><div class="emoji">📱</div><strong>Vertical clips</strong><span>9:16 MP4s ready to review.</span></div><div class="feature"><div class="emoji">💬</div><strong>Post captions</strong><span>Hooks, captions and hashtags.</span></div><div class="feature"><div class="emoji">⬇️</div><strong>Preview & download</strong><span>Keep the clips you like.</span></div></div>
+<p class="hint">AI processing requires an OpenAI API key configured by the site owner. API charges and free-tier limits may apply.</p>
+</section>
+<section class="panel right"><h2>Your clips</h2><p class="sub">Your results will appear here when processing finishes.</p><div id="results" class="empty"><div class="big">✂️</div><strong>No clips yet</strong><span>Submit a video to start finding highlights.</span></div></section>
+</div>
+<footer>ClipNova · AI-assisted clipping · Only process content you have permission to use.</footer>
+</main>
+<script>
+const $ = s => document.querySelector(s);
+let activeJob = null, pollTimer = null;
+function tab(which){const url=which==='url';$('#urlTab').classList.toggle('active',url);$('#uploadTab').classList.toggle('active',!url);$('#urlForm').hidden=!url;$('#uploadForm').hidden=url;}
+$('#urlTab').onclick=()=>tab('url');$('#uploadTab').onclick=()=>tab('upload');
+function setBusy(form,busy){form.querySelector('button[type=submit]').disabled=busy;form.querySelector('button[type=submit]').textContent=busy?'Starting…':(form.id==='urlForm'?'✦ Find my best moments':'✦ Analyze & create clips');}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function statusUI(job){const el=$('#results');el.className='';el.innerHTML=`<div class="status"><div class="statusline"><strong>${escapeHtml(job.message||job.status)}</strong><span>${Number(job.progress||0)}%</span></div><div class="bar"><div style="width:${Number(job.progress||0)}%"></div></div>${job.error?`<p class="error">${escapeHtml(job.error)}</p>`:''}</div>${job.status==='failed'?'<p class="hint">Try a shorter video, verify the API key and limits, or use an authorized upload.</p>':''}`;}
+function fmtTime(n){n=Math.max(0,Math.floor(Number(n)||0));return `${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;}
+function showClips(job){const el=$('#results');el.className='clips';if(!job.clips?.length){statusUI(job);return;}el.innerHTML=job.clips.map(c=>`<article class="clip"><div class="thumb">▶</div><div><h3>Clip ${c.number} · ${escapeHtml(c.hook)}</h3><p>${fmtTime(c.start)}–${fmtTime(c.end)} · ${c.duration}s · Engagement score ${c.score}/100</p><p>${escapeHtml(c.reason)}</p><div class="actions"><a href="${escapeHtml(c.url)}" target="_blank" rel="noopener">▶ Preview</a><a href="${escapeHtml(c.url)}" download>⬇ Download MP4</a><button type="button" data-copy="${c.number}">Copy caption</button></div><div class="caption">${escapeHtml(c.caption)}\n${escapeHtml((c.hashtags||[]).join(' '))}</div></div></article>`).join('');el.querySelectorAll('[data-copy]').forEach(btn=>btn.onclick=async()=>{const c=job.clips.find(x=>x.number===Number(btn.dataset.copy));try{await navigator.clipboard.writeText(`${c.caption}\n\n${(c.hashtags||[]).join(' ')}`);btn.textContent='Copied!';}catch{btn.textContent='Copy unavailable';}});}
+async function watchJob(job){activeJob=job.id;clearTimeout(pollTimer);statusUI(job);if(job.status==='completed'){showClips(job);return;}if(job.status==='failed'){statusUI(job);return;}pollTimer=setTimeout(async()=>{try{const r=await fetch(`/api/jobs/${encodeURIComponent(activeJob)}`);const j=await r.json();if(!r.ok)throw new Error(j.error||'Job status unavailable');watchJob(j);}catch(e){statusUI({status:'failed',progress:0,message:'Could not check job status',error:e.message});}},2200);}
+async function submitJob(form,kind){setBusy(form,true);$('#results').className='';$('#results').innerHTML='<div class="empty"><div class="big">⏳</div><strong>Starting your job…</strong></div>';try{let response;if(kind==='url'){response=await fetch('/api/jobs',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:$('#videoUrl').value.trim()})});}else{const f=$('#videoFile').files[0];if(!f)throw new Error('Choose a video file first.');const data=new FormData();data.append('video',f);response=await fetch('/api/upload',{method:'POST',body:data});}const data=await response.json();if(!response.ok)throw new Error(data.error||'Could not start the job.');watchJob(data);}catch(e){$('#results').className='';$('#results').innerHTML=`<div class="empty"><div class="big">⚠️</div><strong>Could not start</strong><p class="error">${escapeHtml(e.message)}</p></div>`;}finally{setBusy(form,false);}}
+$('#urlForm').addEventListener('submit',e=>{e.preventDefault();submitJob(e.currentTarget,'url');});
+$('#uploadForm').addEventListener('submit',e=>{e.preventDefault();submitJob(e.currentTarget,'upload');});
+</script>
+</body>
+</html>

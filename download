@@ -1,0 +1,6 @@
+node_modules/
+jobs/
+.env
+*.mp4
+*.mp3
+*.webm
