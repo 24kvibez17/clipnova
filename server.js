@@ -31,7 +31,18 @@ app.post('/api/clips', async (req, res) => {
   const id = crypto.randomBytes(8).toString('hex'); const filename = `clipnova-${id}.mp4`; const output = path.join(OUT, filename); const temp = path.join(OUT, `${id}.%(ext)s`);
   try {
     // Intended for videos the user owns or is authorized to process.
-    await run('yt-dlp', ['--no-playlist', '--no-warnings', '-f', 'bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/best', '--merge-output-format', 'mp4', '-o', temp, url]);
+   
+await run('yt-dlp', [
+  '--no-playlist',
+  '--no-warnings',
+  '--js-runtimes', 'deno',
+  '--remote-components', 'ejs:npm',
+  '-f', 'bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]/best',
+  '--merge-output-format', 'mp4',
+  '-o', temp,
+  url
+]);
+
     const downloaded = fs.readdirSync(OUT).filter(n => n.startsWith(id + '.')).map(n => path.join(OUT, n)).find(p => !p.endsWith('.part'));
     if (!downloaded) throw new Error('Downloaded video file was not found.');
     await run('ffmpeg', ['-y', '-ss', String(s), '-i', downloaded, '-t', String(e-s), '-c:v', 'libx264', '-preset', 'veryfast', '-c:a', 'aac', '-movflags', '+faststart', output]);
